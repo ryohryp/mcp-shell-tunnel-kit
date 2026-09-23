@@ -67,7 +67,7 @@ else
             security && /^[^[:space:]#]/ { security=0; scripts=0 }
             security && /^  scripts:[[:space:]]*$/ { scripts=1; next }
             scripts && /^  [^[:space:]#]/ { scripts=0 }
-            scripts && /^    linux_posture:[[:space:]]*\\[/ { found=1 }
+            scripts && /^    linux_posture:[[:space:]]*\[/ { found=1 }
             END { print found ? "YES" : "NO" }
         ' "$config" 2>/dev/null) || declared=UNVERIFIED
         case "$declared" in
