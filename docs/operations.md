@@ -44,6 +44,23 @@ When ChatGPT must edit repository files, use a separate, dedicated development w
 
 A useful first validation is: create a disposable file through the typed write tool, read it back, update it, delete it, then run only the allowlisted `git_status` and `git_diff_check` checks. Verify attempts to access paths outside the workspace remain denied.
 
+### One-time GCE bootstrap for the development profile
+
+The live MCP connection must not modify its own security policy or restart its own Tunnel service. On Google Compute Engine, perform the initial switch through an independently authorized GCP-native administration path (Cloud Console SSH, Cloud Shell plus authorized Compute Engine SSH, or an existing Linux SSH path). This is a bootstrap operation, not a steady-state MCP capability.
+
+Before changing anything, identify the **actual** service name, service user, wrapper, security file and workspace from the deployed unit. Do not assume the example paths below match the VM, and do not paste profiles, environment files, host identifiers or credentials into GitHub or ChatGPT.
+
+1. Fetch the reviewed repository revision containing the development profile through the host's normal source-management procedure.
+2. Create or select a dedicated repository/worktree owned by the unprivileged MCP service user. It must contain no credentials, Tunnel profiles, environment files, backups or unrelated repositories.
+3. Copy `examples/security-development.yaml` to a host-local security file and replace only the workspace path and explicitly reviewed fixed-argv scripts. Keep `security.enabled: true`, `writes_enabled: true`, and keep `MCP_SHELL_ALLOW_UNSAFE` unset.
+4. Validate ownership and permissions, then point the existing secure wrapper at that host-local security file. Preserve the previous security file and wrapper configuration outside the MCP workspace for rollback.
+5. Run the installed `tunnel-client doctor` against the actual profile. If it fails, stop and roll back rather than widening privileges.
+6. Restart **only** the Tunnel service after operator approval. Confirm it is active and that the service still runs as the intended unprivileged account.
+7. Refresh the ChatGPT connector/tool catalog. The expected change is the appearance of typed write tools; arbitrary shell, `sudo`, package-manager and service-management tools must remain absent.
+8. Perform the disposable-file create/read/update/delete test inside the workspace, then run only the allowlisted validation commands. Confirm a path outside the workspace is rejected.
+
+After bootstrap, routine repository editing and validation should flow through typed MCP tools and narrow fixed-argv scripts. Configuration changes, service restarts, credential operations and deployment remain outside the steady-state MCP authority unless separately designed and approved.
+
 ## Roll back
 
 If the service fails to start or the MCP catalog is unexpectedly reduced, restore the **host-local** backups of the active security file, profile and/or unit that were changed. Then run `sudo systemctl daemon-reload` if the unit changed, restart the affected Tunnel service and repeat the health and tool checks. Do not restart unrelated application services.
