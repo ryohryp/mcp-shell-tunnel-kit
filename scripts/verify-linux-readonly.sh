@@ -15,21 +15,24 @@ case "$service" in
   ''|*[!a-zA-Z0-9_.@-]*) printf 'Invalid service name\n' >&2; exit 2 ;;
 esac
 
+result=0
 printf '%s\n' '=== Linux-side verification (read-only) ==='
 printf 'systemd service active: '
 if systemctl is-active --quiet "$service" >/dev/null 2>&1; then
   printf 'PASS\n'
 else
   printf 'FAIL\n'
+  result=1
 fi
 
 for entry in "mcp-shell:$mcp_bin" "tunnel-client:$tunnel_bin"; do
   label=${entry%%:*}
   path=${entry#*:}
-  if [ -x "$path" ]; then
+  if [ -f "$path" ] && [ -x "$path" ]; then
     printf '%s executable: PASS\n' "$label"
   else
     printf '%s executable: FAIL\n' "$label"
+    result=1
   fi
 done
 
@@ -38,3 +41,4 @@ printf '%s\n' 'Inspect the active unit, security config, profile and sanitized l
 printf '%s\n' 'Do not share raw output, paths, account names, credentials or host identifiers.'
 printf '%s\n' 'Run tunnel-client doctor separately with the actual profile; sanitize results.'
 printf '%s\n' 'A PASS here does not establish that ChatGPT tools are reachable.'
+exit "$result"
