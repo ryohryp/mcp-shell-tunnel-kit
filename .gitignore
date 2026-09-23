@@ -1,0 +1,17 @@
+# Host-specific configuration, credentials and generated files
+.env
+.env.*
+!.env.example
+**/runtime.env
+**/secrets/
+**/*credential*
+**/*token*
+**/*key*
+*.pem
+*.p12
+*.key
+*.log
+*.bak
+*.bak.*
+*.swp
+.DS_Store
