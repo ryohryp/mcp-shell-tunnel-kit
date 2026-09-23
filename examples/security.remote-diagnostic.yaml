@@ -1,0 +1,5 @@
+# Add ONLY this fixed-argv mapping under security.scripts in the
+# operator-managed mcp-shell security.yaml. This is a fragment, not a full config.
+# Verify the executable is installed at the absolute path before enabling.
+# No caller-supplied args; no shell or elevated privileges.
+linux_posture: ["/opt/mcp-shell-tunnel-kit/scripts/verify-linux-posture-remote.sh"]
