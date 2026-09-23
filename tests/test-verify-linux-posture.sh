@@ -10,8 +10,8 @@ mkdir "$tmp/bin"
 cat > "$tmp/bin/systemctl" <<'MOCK'
 #!/bin/sh
 case "$1" in
-    is-active) exit "${MOCK_ACTIVE:-0}" ;;
-    is-enabled) exit "${MOCK_ENABLED:-0}" ;;
+    is-active) printf '%s\n' "${MOCK_ACTIVE_STATE-active}"; exit "${MOCK_ACTIVE:-0}" ;;
+    is-enabled) printf '%s\n' "${MOCK_ENABLED_STATE-enabled}"; exit "${MOCK_ENABLED:-0}" ;;
     show)
         case "$3" in
             --property=User) printf '%s\n' "${MOCK_USER-mcp-tunnel}" ;;
@@ -41,9 +41,9 @@ check() {
 }
 
 check healthy 0 tunnel-client.service "$tmp/env"
-MOCK_ENABLED=1; export MOCK_ENABLED
+MOCK_ENABLED_STATE=disabled; export MOCK_ENABLED_STATE
 check disabled 1 tunnel-client.service "$tmp/env"
-unset MOCK_ENABLED
+unset MOCK_ENABLED_STATE
 MOCK_USER=root; export MOCK_USER
 check root_user 1 tunnel-client.service "$tmp/env"
 MOCK_USER=; MOCK_DYNAMIC=yes; export MOCK_DYNAMIC
@@ -61,7 +61,7 @@ check nonroot_credential_owner 1 tunnel-client.service "$tmp/env"
 unset MOCK_STAT
 ln -s "$tmp/env" "$tmp/link"
 check symlink_rejected 1 tunnel-client.service "$tmp/link"
-check missing_file 1 tunnel-client.service "$tmp/missing"
+check missing_file 2 tunnel-client.service "$tmp/missing"
 check invalid_service 2 '../bad' "$tmp/env"
 check invalid_env_path 2 tunnel-client.service relative.env
 check wrong_arguments 2 tunnel-client.service
@@ -69,6 +69,16 @@ if grep -F "$tmp" "$tmp/output" >/dev/null 2>&1; then
     printf '%s\n' 'FAIL usage leaks sensitive details' >&2
     exit 1
 fi
-MOCK_ACTIVE=3; export MOCK_ACTIVE
+MOCK_ACTIVE_STATE=inactive; export MOCK_ACTIVE_STATE
 check inactive 1 tunnel-client.service "$tmp/env"
-unset MOCK_ACTIVE
+unset MOCK_ACTIVE_STATE
+
+MOCK_ACTIVE_STATE=unknown; export MOCK_ACTIVE_STATE
+check unknown_active 2 tunnel-client.service "$tmp/env"
+unset MOCK_ACTIVE_STATE
+MOCK_ENABLED_STATE=static; export MOCK_ENABLED_STATE
+check static_enablement 2 tunnel-client.service "$tmp/env"
+unset MOCK_ENABLED_STATE
+MOCK_STAT='0 640'; export MOCK_STAT
+check group_readable 1 tunnel-client.service "$tmp/env"
+unset MOCK_STAT
