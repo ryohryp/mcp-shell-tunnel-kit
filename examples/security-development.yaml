@@ -1,0 +1,18 @@
+# Opt-in template for a development workspace where typed file writes are required.
+# Do not use this as a drop-in replacement for examples/security.yaml.
+# Replace the workspace path with one dedicated repository/worktree containing no secrets.
+security:
+  enabled: true
+  working_directory: /opt/mcp-shell/workspace
+  max_execution_time: 120s
+  max_output_size: 1048576
+  run_as_user: ""
+  audit_log: true
+  writes_enabled: true
+
+  # Keep execution bounded: fixed argv, no user-supplied command arguments.
+  # Add only commands needed by the target repository and prefer project-owned
+  # scripts with stable arguments over shells/interpreters.
+  scripts:
+    git_status: ["git", "status", "--short", "--branch"]
+    git_diff_check: ["git", "diff", "--check"]
