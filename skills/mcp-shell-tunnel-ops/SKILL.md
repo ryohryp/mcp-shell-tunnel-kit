@@ -24,8 +24,9 @@ Use the tools actually exposed by the connected MCP server; the presence of this
    - `memory` for RAM and swap; swap usage alone does not prove current memory pressure.
    - `disk` for filesystem capacity; review the relevant mount point.
 4. Summarize outputs with units, timestamps when known, and limitations. Do not infer service health, reboot persistence or application correctness from a successful `uptime` alone.
-5. For Tunnel failures, use an **independently authorized** host administration route to check systemd, recent journal entries, the selected Tunnel profile and `tunnel-client doctor`. Do not claim to have checked these through a read-only MCP tool.
-6. After a configuration change, verify both host-side service health **and** end-to-end visibility/execution of the expected ChatGPT tools.
+5. If an operator-installed `mcp_config_status` script is actually allowlisted, use it to check only the **inherited** config path, its readability and writability, and whether a known `linux_posture` entry appears in the kit's documented YAML layout. Its output does not attest to the **effective** loaded config or current registry. An unknown script error means the active server still does not expose it; adding the repository script alone never deploys it. Follow [the bootstrap checklist](../../docs/mcp-config-self-check.md) via an independently authorized Linux-native administration route; never bypass the allowlist.
+6. For Tunnel failures, use an **independently authorized** host administration route to check systemd, recent journal entries, the selected Tunnel profile and `tunnel-client doctor`. Do not claim to have checked these through a read-only MCP tool.
+7. After a configuration change, verify both host-side service health **and** end-to-end visibility/execution of the expected ChatGPT tools.
 
 ## Safety boundaries
 
