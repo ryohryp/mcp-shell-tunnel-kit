@@ -1,0 +1,16 @@
+# Template for mcp-shell v1.0.0, not a live host's security.yaml.
+# Replace /opt/mcp-shell/workspace with a private directory containing no secrets.
+security:
+  enabled: true
+  working_directory: /opt/mcp-shell/workspace
+  max_execution_time: 30s
+  max_output_size: 1048576
+  run_as_user: ""
+  audit_log: true
+  writes_enabled: false
+
+  # Fixed argv only. There are no user-supplied command arguments.
+  scripts:
+    uptime: ["uptime"]
+    memory: ["free", "-h"]
+    disk: ["df", "-h"]

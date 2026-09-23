@@ -1,0 +1,24 @@
+# Template. Replace paths/user/profile before installing.
+# Store this file at /etc/systemd/system/tunnel-client.service.
+[Unit]
+Description=OpenAI Secure MCP Tunnel (MCP Shell)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=mcp-tunnel
+Group=mcp-tunnel
+WorkingDirectory=/opt/tunnel-client
+EnvironmentFile=/etc/tunnel-client/runtime.env
+UnsetEnvironment=MCP_SHELL_ALLOW_UNSAFE
+UMask=0077
+RuntimeDirectory=tunnel-client
+RuntimeDirectoryMode=0700
+ExecStart=/opt/tunnel-client/tunnel-client run --profile server-stdio --profile-dir /opt/tunnel-client/profiles --health.url-file /run/tunnel-client/health-url --log.level=info --log.format=json
+Restart=always
+RestartSec=2
+
+# Consider additional systemd sandboxing after testing on your host.
+[Install]
+WantedBy=multi-user.target
