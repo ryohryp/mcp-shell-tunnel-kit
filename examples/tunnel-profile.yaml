@@ -1,0 +1,9 @@
+# PARTIAL example for tunnel-client v0.0.14, NOT a complete profile.
+# Create a real profile with tunnel-client's own init/profile commands; keep
+# the tunnel ID, control-plane key, and any environment-specific fields private.
+#
+# The relevant main-channel stdio target:
+mcp:
+  commands:
+    - channel: main
+      command: /opt/mcp-shell-tunnel-kit/run-mcp-shell-secure.sh
