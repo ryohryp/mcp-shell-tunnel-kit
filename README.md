@@ -13,6 +13,8 @@ This repository contains **configuration templates and operational instructions*
 
 For operators troubleshooting a `linux_posture` **unknown script** response, use [the host-local deployment and optional MCP config self-check procedure](docs/mcp-config-self-check.md). Neither a merged PR nor a ChatGPT connector refresh installs a script or changes the VM's active security allowlist.
 
+For Personal Orbit note article publication, use the existing [authenticated GitHub command route and cloud rollout gates](docs/note-publication-command-boundary.md), **not** an MCP `run_script` posting capability.
+
 `run_script` is *not* an arbitrary shell: callers select a preconfigured script name and cannot replace its arguments. The sample keeps `writes_enabled: false` and does **not** enable `MCP_SHELL_ALLOW_UNSAFE`.
 
 ## Architecture
