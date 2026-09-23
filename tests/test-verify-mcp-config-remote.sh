@@ -12,7 +12,6 @@ security:
     uptime: ["uptime"]
     linux_posture: ["/root/DO-NOT-RUN"]
 YAML
-chmod 444 "$tmp/security.yaml"
 run() {
     label=$1 expected=$2
     shift 2
