@@ -19,5 +19,9 @@ jobs:
         run: |
           dash -n scripts/verify-linux-posture-remote.sh
           dash -n tests/test-verify-linux-posture-remote.sh
+          dash -n scripts/verify-mcp-config-remote.sh
+          dash -n tests/test-verify-mcp-config-remote.sh
       - name: Run offline regression tests
-        run: dash tests/test-verify-linux-posture-remote.sh
+        run: |
+          dash tests/test-verify-linux-posture-remote.sh
+          dash tests/test-verify-mcp-config-remote.sh
