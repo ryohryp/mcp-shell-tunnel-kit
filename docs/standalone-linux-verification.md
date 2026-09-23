@@ -25,6 +25,8 @@ Confirm that the effective unit starts the intended stdio wrapper as an unprivil
 
 Locally inspect the effective mcp-shell security configuration and verify the intended dedicated workspace, `security.enabled: true`, `writes_enabled: false`, and a minimal fixed-argument script allowlist. Ensure unsafe mode is not enabled. **Do not post** the actual config, profile, environment file, full process arguments, or unredacted logs. A successful systemd check does not prove end-to-end tool availability.
 
+For a bounded, sanitized first pass on service and credential-file posture, run [`scripts/verify-linux-posture.sh`](../scripts/verify-linux-posture.sh) independently on the VM, as documented in [`linux-posture.md`](linux-posture.md). Its PASS results **do not** establish the active stdio target, real security flags, correct profile, or successful `tunnel-client doctor`; inspect those locally as described above.
+
 ## 3. ChatGPT-side checks
 
 Connect the VM-hosted Tunnel's MCP connector to the ChatGPT session. Discover the **actually exposed** tools rather than assuming the skill or template installs them. Where present, call:

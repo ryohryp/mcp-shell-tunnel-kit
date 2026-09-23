@@ -19,5 +19,9 @@ jobs:
         run: |
           dash -n scripts/verify-linux-readonly.sh
           dash -n tests/test-verify-linux-readonly.sh
+          dash -n scripts/verify-linux-posture.sh
+          dash -n tests/test-verify-linux-posture.sh
       - name: Run offline regression tests
-        run: dash tests/test-verify-linux-readonly.sh
+        run: |
+          dash tests/test-verify-linux-readonly.sh
+          dash tests/test-verify-linux-posture.sh
