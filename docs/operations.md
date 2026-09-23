@@ -32,6 +32,18 @@ sudo journalctl -u tunnel-client.service -n 30 --no-pager
 
 Logs should show the intended security file, `security_enabled=true`, `writes_enabled=false`, `scripts=3` and a successfully started Tunnel. Service health alone does **not** prove the tools are visible in ChatGPT. Refresh the connector catalog if needed, then invoke `run_script` for `uptime`, `memory` and `disk` through ChatGPT and verify their output. Confirm the existing typed read tools still work.
 
+## Opt-in development workspace
+
+When ChatGPT must edit repository files, use a separate, dedicated development workspace and start from `examples/security-development.yaml` rather than changing the read-only template in place.
+
+- `writes_enabled: true` enables mcp-shell's typed write tools only within the configured working directory. Treat that directory boundary as the primary write boundary and keep credentials, deployment profiles, unrelated repositories and backups outside it.
+- Keep `MCP_SHELL_ALLOW_UNSAFE` unset. Typed writes do not require arbitrary shell access.
+- Add execution one operation at a time as fixed argv. Prefer non-mutating validation commands and repository-owned scripts with stable arguments. Do not expose `sh -c`, `bash -c`, interpreters, package managers, `sudo`, or caller-controlled paths/arguments.
+- Do not allow deployment, service restart, credential/session changes, publication, or other external side effects merely because repository writes are enabled. Those remain separately authorized operations.
+- Before enabling this profile on a VM, review the effective workspace permissions and active security file through an independently authorized Linux-native administration path.
+
+A useful first validation is: create a disposable file through the typed write tool, read it back, update it, delete it, then run only the allowlisted `git_status` and `git_diff_check` checks. Verify attempts to access paths outside the workspace remain denied.
+
 ## Roll back
 
 If the service fails to start or the MCP catalog is unexpectedly reduced, restore the **host-local** backups of the active security file, profile and/or unit that were changed. Then run `sudo systemctl daemon-reload` if the unit changed, restart the affected Tunnel service and repeat the health and tool checks. Do not restart unrelated application services.
