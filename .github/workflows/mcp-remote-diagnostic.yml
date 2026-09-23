@@ -1,0 +1,23 @@
+name: MCP remote diagnostic offline tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remote-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check POSIX shell syntax
+        run: |
+          dash -n scripts/verify-linux-posture-remote.sh
+          dash -n tests/test-verify-linux-posture-remote.sh
+      - name: Run offline regression tests
+        run: dash tests/test-verify-linux-posture-remote.sh
