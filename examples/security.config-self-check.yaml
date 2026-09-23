@@ -1,0 +1,4 @@
+# Optional fragment for the operator-managed security.scripts map.
+# Do not enable without first installing the root-owned executable.
+# This script has no remotely supplied arguments and prints bounded labels only.
+mcp_config_status: ["/opt/mcp-shell-tunnel-kit/scripts/verify-mcp-config-remote.sh"]
