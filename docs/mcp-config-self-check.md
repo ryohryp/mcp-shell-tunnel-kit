@@ -51,6 +51,32 @@ example YAML indentation under `security.scripts`. The output contains only
 fixed labels with PASS/FAIL/UNVERIFIED or YES/NO; it never prints hostnames,
 paths, usernames, YAML contents, credentials or arbitrary script names.
 
+## Interpreting the new diagnostic reason
+
+The helper now emits one fixed `config inspection reason` code; it never
+prints the path, environment value, YAML or credentials:
+
+| Code | Interpretation | Safe next check |
+| --- | --- | --- |
+| `CONFIG_ENV_UNSET` | The helper did not inherit the environment variable. | Independently inspect the live mcp-shell launch wrapper and stdio target on the VM. |
+| `CONFIG_ENV_EMPTY` | The inherited variable is present but empty. | Inspect host-local wrapper configuration. |
+| `CONFIG_PATH_NOT_ABSOLUTE` | The configured value is not an absolute path. | Check the active wrapper locally; do not guess a remote path. |
+| `CONFIG_FILE_SYMLINK` | The inherited path is a symbolic link. | Inspect the approved host-local deployment; use a verified regular file. |
+| `CONFIG_FILE_MISSING` | The inherited absolute path does not exist for this process. | Compare the host-local wrapper and deployed security-file location. |
+| `CONFIG_NOT_REGULAR` | The inherited path is not a regular file. | Inspect the file type through an authorized administration channel. |
+| `CONFIG_NOT_READABLE` | The helper cannot read the file. | Review owner, mode and service account locally without changing permissions broadly. |
+| `CONFIG_FILE_ACCESSIBLE` | The inherited file is a readable non-symlink regular file. | Verify the effective configuration and tool registry separately. |
+
+`CONFIG_ENV_UNSET`, `CONFIG_ENV_EMPTY` and non-absolute values result in
+`UNVERIFIED`, not an assertion that the running MCP server lacks security
+configuration. An observed missing/invalid/unreadable inherited file produces
+`FAIL` for the file check but still does **not** establish the server's
+effective loaded config. The helper's exit status remains unchanged (zero for
+a completed diagnostic; two for rejected arguments); callers should interpret
+its fixed output labels. In particular, fixing these conditions must not
+involve making the security file world-readable or adding arbitrary shell
+commands to the allowlist.
+
 The YAML-key check is an intentionally narrow **textual inspection** for the
 kit's documented formatting, not a complete YAML parser. `NO` can mean the
 file uses another layout. The inherited environment value is not proof that
