@@ -37,6 +37,7 @@ Logs should show the intended security file, `security_enabled=true`, `writes_en
 When ChatGPT must edit repository files, use a separate, dedicated development workspace and start from `examples/security-development.yaml` rather than changing the read-only template in place.
 
 - `writes_enabled: true` enables mcp-shell's typed write tools only within the configured working directory. Treat that directory boundary as the primary write boundary and keep credentials, deployment profiles, unrelated repositories and backups outside it.
+- In this development profile, seeing typed file/Git write tools in the ChatGPT MCP catalog is **expected** and should pass capability verification. Treat it as a failure only if writes were not intentionally enabled, the tools escape the configured workspace, or arbitrary shell/unsafe execution is also exposed.
 - Keep `MCP_SHELL_ALLOW_UNSAFE` unset. Typed writes do not require arbitrary shell access.
 - Add execution one operation at a time as fixed argv. Prefer non-mutating validation commands and repository-owned scripts with stable arguments. Do not expose `sh -c`, `bash -c`, interpreters, package managers, `sudo`, or caller-controlled paths/arguments.
 - Do not allow deployment, service restart, credential/session changes, publication, or other external side effects merely because repository writes are enabled. Those remain separately authorized operations.
