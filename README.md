@@ -6,7 +6,8 @@ This repository contains **configuration templates and operational instructions*
 
 ## What it provides
 
-- Secure-mode MCP file and Git inspection tools scoped to a dedicated workspace.\n- An opt-in development profile for typed file edits plus narrowly allowlisted fixed-argv checks.
+- Secure-mode MCP file and Git inspection tools scoped to a dedicated workspace.
+- An opt-in development profile for typed file/Git writes plus narrowly allowlisted fixed-argv checks.
 - Opt-in, **operator-defined** diagnostic commands via `run_script` (`uptime`, `free -h`, `df -h`).
 - An outbound Tunnel running as a systemd service, using a separate environment file for credentials.
 - A verification and rollback checklist for changing an existing installation.
@@ -15,7 +16,7 @@ For operators troubleshooting a `linux_posture` **unknown script** response, use
 
 For Personal Orbit note article publication, use the existing [authenticated GitHub command route and cloud rollout gates](docs/note-publication-command-boundary.md), **not** an MCP `run_script` posting capability.
 
-`run_script` is *not* an arbitrary shell: callers select a preconfigured script name and cannot replace its arguments. The default sample keeps `writes_enabled: false` and does **not** enable `MCP_SHELL_ALLOW_UNSAFE`. When edits are required, [`examples/security-development.yaml`](examples/security-development.yaml) is a separate opt-in profile that enables only mcp-shell's typed writes inside the dedicated workspace; it still keeps command execution fixed-argv and unsafe mode off.
+`run_script` is *not* an arbitrary shell: callers select a preconfigured script name and cannot replace its arguments. The default read-only sample keeps `writes_enabled: false` and does **not** enable `MCP_SHELL_ALLOW_UNSAFE`. For a development workspace, [`examples/security-development.yaml`](examples/security-development.yaml) is the intended opt-in profile: `writes_enabled: true` exposes mcp-shell's typed file/Git write tools inside the dedicated workspace. Their presence is therefore expected and is not by itself a security failure. The security boundary is that arbitrary shell/unsafe execution remains disabled, while command execution stays limited to explicitly allowlisted fixed-argv scripts.
 
 ## Architecture
 
