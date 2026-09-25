@@ -26,3 +26,25 @@ Avoid using a Git failure in the fixture as evidence of a broken Tunnel or Git t
 - With operator approval, test service recovery after an approved VM reboot; verify ChatGPT-side tool discovery again.
 
 This evidence supports only the checks listed as PASS. A successful client-side traversal rejection does not independently prove every possible filesystem boundary or the complete host configuration. Do not perform service restarts or production configuration changes as part of this checklist.
+
+## Bounded development workspace E2E verification (2026-09-24 UTC)
+
+After the opt-in development profile was applied and the ChatGPT connector catalog was refreshed, the client exposed the typed write and bounded Git tools expected from mcp-shell with `writes_enabled: true`.
+
+The following checks were performed against the dedicated Git workspace:
+
+| Check | Expected result | Observation |
+| --- | --- | --- |
+| Tool discovery after connector refresh | Typed write/edit/delete and bounded Git tools are visible | PASS |
+| Create disposable file with `write_file` | File is created inside the workspace | PASS |
+| Read created file | Written content is returned | PASS |
+| Update disposable file with `edit_file` | Exact replacement succeeds | PASS |
+| Delete disposable file | File is removed | PASS |
+| Read/stat after deletion | File no longer exists | PASS |
+| Read `../...` outside workspace | Traversal is rejected | PASS; escaped workspace rejected |
+| `run_script(name="git_status")` | Fixed-argv validation command runs | PASS; clean branch reported |
+| `run_script(name="git_diff_check")` | Fixed-argv validation command runs without diff errors | PASS |
+
+The first connector view continued to expose the previous read-only catalog even though a direct `tools/list` against mcp-shell already included the write tools. Restarting the Tunnel alone did not update the ChatGPT-visible catalog. Refreshing the connector caused the new tool schema to appear. This distinguishes host-side mcp-shell registration from client-side connector catalog refresh.
+
+No arbitrary shell, `sudo`, package-manager, service-management, credential-management, or deployment capability was added. The disposable test file was deleted and the repository was clean after verification.
