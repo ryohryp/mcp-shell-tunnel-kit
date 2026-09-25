@@ -16,3 +16,8 @@ security:
   scripts:
     git_status: ["git", "status", "--short", "--branch"]
     git_diff_check: ["git", "diff", "--check"]
+
+    # OPTIONAL external side effect. Install a reviewed, root-owned copy of
+    # scripts/bounded-git-push.sh outside the MCP workspace, pin its repository,
+    # remote and allowed branches, then uncomment this fixed-argv mapping.
+    # git_push_bounded: ["/opt/mcp-shell-tunnel-kit/scripts/bounded-git-push.sh"]
