@@ -43,6 +43,8 @@ The Tunnel connects to an operator-managed local MCP target; you do not need to 
 5. Adapt [`examples/tunnel-client.service`](examples/tunnel-client.service) to your installation paths, service user and profile. Put credentials in a root-controlled environment file (mode `0600`); never store it in this repository.
 6. Run `tunnel-client doctor --profile <name> --profile-dir <path>` using your installed release, then follow [`docs/operations.md`](docs/operations.md) to validate, start and test the service.
 
+For a deployment on Google Cloud Compute Engine, use [`docs/gcp-compute-engine-verification.md`](docs/gcp-compute-engine-verification.md) to perform the independent Linux-native verification required by Issue #3 without RDC or Windows.
+
 For native commands and the full Tunnel profile schema, always use [upstream configuration documentation](https://github.com/openai/tunnel-client/blob/v0.0.14/docs/configuration.md).
 
 ## Scope and security
