@@ -1,28 +1,28 @@
-1	# Opt-in template for a development workspace where typed file writes are required.
-     2	# Do not use this as a drop-in replacement for examples/security.yaml.
-     3	# Replace the workspace path with one dedicated repository/worktree containing no secrets.
-     4	security:
-     5	  enabled: true
-     6	  working_directory: /opt/mcp-shell/workspace
-     7	  max_execution_time: 120s
-     8	  max_output_size: 1048576
-     9	  run_as_user: ""
-    10	  audit_log: true
-    11	  writes_enabled: true
-    12	
-    13	  # Keep execution bounded: fixed argv, no user-supplied command arguments.
-    14	  # Add only commands needed by the target repository and prefer project-owned
-    15	  # scripts with stable arguments over shells/interpreters.
-    16	  scripts:
-    17	    git_status: ["git", "status", "--short", "--branch"]
-    18	    git_diff_check: ["git", "diff", "--check"]
-    19	
-    20	    # OPTIONAL external side effect. Install a reviewed, root-owned copy of
-    21	    # scripts/bounded-git-push.sh outside the MCP workspace, pin its repository,
-    22	    # remote and allowed branches, then uncomment this fixed-argv mapping.
-    23	    # git_push_bounded: ["/opt/mcp-shell-tunnel-kit/scripts/bounded-git-push.sh"]
-    24	
-    25	    # OPTIONAL production side effect. This no-argument wrapper validates a clean,
-    26	    # current Personal Orbit main checkout, then invokes one fixed sudo command.
-    27	    # The separately installed root script and sudoers rule must also be reviewed.
-    28	    # personal_orbit_helper_install: ["/opt/mcp-shell-tunnel-kit/scripts/install-personal-orbit-deploy-helpers.sh"]
+# Opt-in template for a development workspace where typed file writes are required.
+# Do not use this as a drop-in replacement for examples/security.yaml.
+# Replace the workspace path with one dedicated repository/worktree containing no secrets.
+security:
+  enabled: true
+  working_directory: /opt/mcp-shell/workspace
+  max_execution_time: 120s
+  max_output_size: 1048576
+  run_as_user: ""
+  audit_log: true
+  writes_enabled: true
+
+  # Keep execution bounded: fixed argv, no user-supplied command arguments.
+  # Add only commands needed by the target repository and prefer project-owned
+  # scripts with stable arguments over shells/interpreters.
+  scripts:
+    git_status: ["git", "status", "--short", "--branch"]
+    git_diff_check: ["git", "diff", "--check"]
+
+    # OPTIONAL external side effect. Install a reviewed, root-owned copy of
+    # scripts/bounded-git-push.sh outside the MCP workspace, pin its repository,
+    # remote and allowed branches, then uncomment this fixed-argv mapping.
+    # git_push_bounded: ["/opt/mcp-shell-tunnel-kit/scripts/bounded-git-push.sh"]
+
+    # OPTIONAL production side effect. This no-argument wrapper validates a clean,
+    # current Personal Orbit main checkout, then invokes one fixed sudo command.
+    # The separately installed root script and sudoers rule must also be reviewed.
+    # personal_orbit_helper_install: ["/opt/mcp-shell-tunnel-kit/scripts/install-personal-orbit-deploy-helpers.sh"]

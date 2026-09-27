@@ -1,31 +1,31 @@
-1	name: Linux preflight tests
-     2	
-     3	on:
-     4	  pull_request:
-     5	  push:
-     6	    branches: [main]
-     7	  workflow_dispatch:
-     8	
-     9	permissions:
-    10	  contents: read
-    11	
-    12	jobs:
-    13	  preflight:
-    14	    runs-on: ubuntu-latest
-    15	    timeout-minutes: 5
-    16	    steps:
-    17	      - uses: actions/checkout@v4
-    18	      - name: Check POSIX shell syntax
-    19	        run: |
-    20	          dash -n scripts/verify-linux-readonly.sh
-    21	          dash -n tests/test-verify-linux-readonly.sh
-    22	          dash -n scripts/verify-linux-posture.sh
-    23	          dash -n tests/test-verify-linux-posture.sh
-    24	          dash -n scripts/install-personal-orbit-deploy-helpers.sh
-    25	          dash -n scripts/install-personal-orbit-deploy-helpers-root.sh
-    26	          dash -n tests/test-personal-orbit-helper-install.sh
-    27	      - name: Run offline regression tests
-    28	        run: |
-    29	          dash tests/test-verify-linux-readonly.sh
-    30	          dash tests/test-verify-linux-posture.sh
-    31	          dash tests/test-personal-orbit-helper-install.sh
+name: Linux preflight tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check POSIX shell syntax
+        run: |
+          dash -n scripts/verify-linux-readonly.sh
+          dash -n tests/test-verify-linux-readonly.sh
+          dash -n scripts/verify-linux-posture.sh
+          dash -n tests/test-verify-linux-posture.sh
+          dash -n scripts/install-personal-orbit-deploy-helpers.sh
+          dash -n scripts/install-personal-orbit-deploy-helpers-root.sh
+          dash -n tests/test-personal-orbit-helper-install.sh
+      - name: Run offline regression tests
+        run: |
+          dash tests/test-verify-linux-readonly.sh
+          dash tests/test-verify-linux-posture.sh
+          dash tests/test-personal-orbit-helper-install.sh
