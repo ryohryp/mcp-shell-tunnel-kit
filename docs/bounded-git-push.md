@@ -28,6 +28,8 @@ This is still an external side effect. Do not enable it merely because `writes_e
 
 Use a disposable approved branch first. Confirm a normal fast-forward push succeeds. Then verify that a detached HEAD and a non-allowlisted branch are rejected. Because the MCP mapping accepts no arguments, callers cannot select another remote, provide an arbitrary refspec, or request force push.
 
+For end-to-end verification, also invoke `run_script(name="git_push_bounded")` through the ChatGPT MCP connection. A successful direct `tools/list` response from mcp-shell proves the server loaded the mapping, but an already-open ChatGPT conversation can continue to show an older cached tool schema. If the host-local config and direct `tools/list` both contain the new script but the conversation does not, reconnect/refresh the connector and start a new conversation so the tool catalog is negotiated again.
+
 Also confirm the configured repository remains the dedicated MCP workspace and that credentials stay outside it. A push failure must be reported as a failure; do not add an unsafe fallback.
 
 ## Rollback
