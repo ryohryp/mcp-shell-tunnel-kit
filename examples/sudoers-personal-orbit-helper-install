@@ -1,3 +1,3 @@
-1	# Example only. Replace mcp-shell with the actual unprivileged Tunnel/MCP service user.
-     2	# Install with visudo validation through an independently authorized administration path.
-     3	mcp-shell ALL=(root) NOPASSWD: /usr/local/sbin/install-personal-orbit-deploy-helpers
+# Example only. Replace mcp-shell with the actual unprivileged Tunnel/MCP service user.
+# Install with visudo validation through an independently authorized administration path.
+mcp-shell ALL=(root) NOPASSWD: /usr/local/sbin/install-personal-orbit-deploy-helpers
