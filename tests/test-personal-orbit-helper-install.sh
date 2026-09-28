@@ -23,7 +23,10 @@ fi
 grep -F 'REPO="/home/ryohryp/personal-orbit"' "$ROOT" >/dev/null || fail "Personal Orbit repository is not pinned"
 grep -F 'REPO_USER="ryohryp"' "$ROOT" >/dev/null || fail "repository owner is not pinned"
 grep -F "runuser --user \"\$REPO_USER\"" "$ROOT" >/dev/null || fail "root installer must validate through the repository owner's identity"
-grep -F '= "main"' "$ROOT" >/dev/null || fail "main branch is not pinned"
+grep -F "[ -z \"\$checkout_branch\" ] || [ \"\$checkout_branch\" = \"main\" ]" "$ROOT" >/dev/null \
+  || fail "only detached HEAD or main branch may be used"
+grep -F "repo_git merge-base --is-ancestor \"\$checkout_sha\" \"\$SOURCE_SHA\"" "$ROOT" >/dev/null \
+  || fail "checkout HEAD must belong to reviewed origin/main history"
 grep -F 'ops/verify-runtime-artifact.mjs' "$ROOT" >/dev/null || fail "runtime verifier is not installed"
 grep -F 'ops/deploy-personal-orbit' "$ROOT" >/dev/null || fail "root deploy wrapper is not installed"
 grep -F 'EXPECTED_ORIGIN="git@github.com:ryohryp/personal-orbit.git"' "$ROOT" >/dev/null || fail "exact Personal Orbit origin is not pinned"

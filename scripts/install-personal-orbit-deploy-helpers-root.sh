@@ -33,7 +33,9 @@ repo_git() {
       /usr/bin/git -C "$REPO" "$@"
 }
 
-[ "$(repo_git symbolic-ref --quiet --short HEAD)" = "main" ] || die "checkout is not on main"
+checkout_branch=$(repo_git symbolic-ref --quiet --short HEAD) || checkout_branch=""
+[ -z "$checkout_branch" ] || [ "$checkout_branch" = "main" ] \
+  || die "checkout is on an unexpected branch"
 [ -z "$(repo_git status --porcelain)" ] || die "checkout is not clean"
 
 remote_url=$(repo_git remote get-url origin) || die "origin is unavailable"
@@ -47,6 +49,8 @@ case "$SOURCE_SHA" in
   *[!0-9a-f]*|'') die "origin/main SHA is invalid" ;;
 esac
 [ "${#SOURCE_SHA}" -eq 40 ] || die "origin/main SHA is invalid"
+repo_git merge-base --is-ancestor "$checkout_sha" "$SOURCE_SHA" \
+  || die "checkout HEAD is not an ancestor of origin/main"
 remote_listing=$(repo_git ls-remote origin refs/heads/main) || die "origin/main could not be rechecked"
 remote_sha=$(printf '%s\n' "$remote_listing" | awk '$2 == "refs/heads/main" {print $1}')
 [ "$remote_sha" = "$SOURCE_SHA" ] || die "origin/main moved during helper installation"
