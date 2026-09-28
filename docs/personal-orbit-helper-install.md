@@ -4,11 +4,11 @@ This optional capability exists only to install the reviewed Personal Orbit depl
 
 ## Boundary
 
-The MCP-visible `personal_orbit_helper_install` mapping accepts no arguments. Its installed wrapper pins the Personal Orbit repository, `origin`, `main`, and one root installer path. Before sudo it requires a clean main checkout whose HEAD exactly matches the current `origin/main`.
+The MCP-visible `personal_orbit_helper_install` mapping accepts no arguments and invokes a root-owned wrapper outside the MCP workspace. That wrapper accepts no arguments and runs only the fixed root installer with non-interactive sudo. The MCP account does not need read access to the private application checkout; the root installer performs every repository check through the pinned application account before it reads source files.
 
-The sudoers rule permits only:
+The sudoers command specification uses `""` to permit only an invocation with no arguments:
 
-`/usr/local/sbin/install-personal-orbit-deploy-helpers`
+`/usr/local/sbin/install-personal-orbit-deploy-helpers ""`
 
 with no caller-controlled arguments. The root installer repeats the repository, branch, clean-tree, remote URL and current-origin checks before copying exactly these files:
 
@@ -23,8 +23,8 @@ All installed files are `root:root 0755`. The installer syntax-checks the instal
 Enabling this capability itself changes a production authorization boundary and therefore requires an independently authorized administration path.
 
 1. Review and run `tests/test-personal-orbit-helper-install.sh`.
-2. Install reviewed copies of both scripts outside the MCP workspace. The MCP wrapper should be executable but non-writable by the service user. The root installer must be `root:root 0755`.
-3. Install the sudoers example only after replacing `mcp-shell` with the actual unprivileged service account. Validate it with `visudo -cf`; do not grant a shell, wildcard arguments, editors, package managers, service management, or general `install`/filesystem commands.
+2. Install reviewed copies of both scripts outside the MCP workspace. The MCP wrapper should be `root:root 0755`; the root installer must also be `root:root 0755`.
+3. Install the sudoers example only after replacing `mcp-shell` with the actual unprivileged service account. Validate it with `visudo -cf`, then inspect effective privileges with `sudo -l` for that account. If another included rule grants broader sudo, add a later host-owned rule that revokes it before granting only this argumentless installer. Do not grant a shell, wildcard arguments, editors, package managers, service management, or general `install`/filesystem commands.
 4. Add the fixed-argv `personal_orbit_helper_install` mapping to the active security config.
 5. Restart/refresh the Tunnel through the existing administration path.
 6. Verify the live tool catalog exposes the named script and still exposes no arbitrary shell/sudo capability.
