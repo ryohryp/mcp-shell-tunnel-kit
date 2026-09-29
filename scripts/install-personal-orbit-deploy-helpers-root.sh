@@ -7,10 +7,12 @@ REPO_HOME="/home/ryohryp"
 LIBEXEC_DIR="/usr/local/libexec/personal-orbit"
 SBIN_DIR="/usr/local/sbin"
 TUNNEL_BOOTSTRAP_PATH="$SBIN_DIR/bootstrap-gce-tunnel-ops-delegation"
+RUNTIME_BOOTSTRAP_PATH="$SBIN_DIR/bootstrap-gce-runtime-artifact"
 EXPECTED_ORIGIN="git@github.com:ryohryp/personal-orbit.git"
 MAIN_REF="refs/remotes/origin/main"
 SOURCE_SHA=""
-BOOTSTRAP_STAGED=0
+TUNNEL_BOOTSTRAP_STAGED=0
+RUNTIME_BOOTSTRAP_STAGED=0
 TEMP_DIR=""
 
 die() {
@@ -62,8 +64,11 @@ TEMP_DIR=$(mktemp -d) || die "could not create a temporary source directory"
 cleanup() {
   status=$?
   trap - EXIT
-  if [ "$status" -ne 0 ] && [ "$BOOTSTRAP_STAGED" -eq 1 ]; then
+  if [ "$status" -ne 0 ] && [ "$TUNNEL_BOOTSTRAP_STAGED" -eq 1 ]; then
     rm -f -- "$TUNNEL_BOOTSTRAP_PATH" || printf '%s\n' "install-personal-orbit-deploy-helpers-root: could not remove temporary Tunnel bootstrap" >&2
+  fi
+  if [ "$status" -ne 0 ] && [ "$RUNTIME_BOOTSTRAP_STAGED" -eq 1 ]; then
+    rm -f -- "$RUNTIME_BOOTSTRAP_PATH" || printf '%s\n' "install-personal-orbit-deploy-helpers-root: could not remove temporary runtime bootstrap" >&2
   fi
   if [ -n "$TEMP_DIR" ]; then
     rm -rf -- "$TEMP_DIR" || {
@@ -110,44 +115,44 @@ assert_privileged_directory() {
 assert_privileged_directory "$SBIN_DIR"
 assert_privileged_directory /etc/sudoers.d
 
-extract_source ops/deploy-gce.sh "$TEMP_DIR/deploy-gce.sh"
-extract_source ops/verify-runtime-artifact.mjs "$TEMP_DIR/verify-runtime-artifact.mjs"
-extract_source ops/deploy-personal-orbit "$TEMP_DIR/deploy-personal-orbit"
+extract_source ops/bootstrap-gce-runtime-artifact "$TEMP_DIR/bootstrap-gce-runtime-artifact"
 extract_source ops/bootstrap-gce-tunnel-ops-delegation "$TEMP_DIR/bootstrap-gce-tunnel-ops-delegation"
 
-node --check "$TEMP_DIR/verify-runtime-artifact.mjs"
-bash -n "$TEMP_DIR/deploy-personal-orbit"
-bash -n "$TEMP_DIR/deploy-gce.sh"
+bash -n "$TEMP_DIR/bootstrap-gce-runtime-artifact"
 bash -n "$TEMP_DIR/bootstrap-gce-tunnel-ops-delegation"
 
-if [ -e "$TUNNEL_BOOTSTRAP_PATH" ] || [ -L "$TUNNEL_BOOTSTRAP_PATH" ]; then
-  [ -f "$TUNNEL_BOOTSTRAP_PATH" ] && [ ! -L "$TUNNEL_BOOTSTRAP_PATH" ] \
-    || die "existing Tunnel bootstrap target is not a regular file"
-  [ "$(stat --format='%U:%G:%a' "$TUNNEL_BOOTSTRAP_PATH")" = "root:root:755" ] \
-    || die "existing Tunnel bootstrap ownership/mode is unexpected"
+for bootstrap_path in "$RUNTIME_BOOTSTRAP_PATH" "$TUNNEL_BOOTSTRAP_PATH"; do
+  if [ -e "$bootstrap_path" ] || [ -L "$bootstrap_path" ]; then
+    [ -f "$bootstrap_path" ] && [ ! -L "$bootstrap_path" ] \
+      || die "existing bootstrap target is not a regular file: $bootstrap_path"
+    [ "$(stat --format='%U:%G:%a' "$bootstrap_path")" = "root:root:755" ] \
+      || die "existing bootstrap ownership/mode is unexpected: $bootstrap_path"
+  fi
+done
+
+if [ -e "$RUNTIME_BOOTSTRAP_PATH" ]; then
+  cmp -s -- "$TEMP_DIR/bootstrap-gce-runtime-artifact" "$RUNTIME_BOOTSTRAP_PATH" \
+    || die "refusing to replace an unexpected runtime bootstrap"
+fi
+if [ -e "$TUNNEL_BOOTSTRAP_PATH" ]; then
   cmp -s -- "$TEMP_DIR/bootstrap-gce-tunnel-ops-delegation" "$TUNNEL_BOOTSTRAP_PATH" \
     || die "refusing to replace an unexpected Tunnel bootstrap"
 fi
 
-install -d -o root -g root -m 0755 "$LIBEXEC_DIR"
-install -o root -g root -m 0755 "$TEMP_DIR/deploy-gce.sh" "$LIBEXEC_DIR/deploy-gce.sh"
-install -o root -g root -m 0755 "$TEMP_DIR/verify-runtime-artifact.mjs" "$LIBEXEC_DIR/verify-runtime-artifact.mjs"
-install -o root -g root -m 0755 "$TEMP_DIR/deploy-personal-orbit" "$SBIN_DIR/deploy-personal-orbit"
+RUNTIME_BOOTSTRAP_STAGED=1
+install -o root -g root -m 0755 \
+  "$TEMP_DIR/bootstrap-gce-runtime-artifact" "$RUNTIME_BOOTSTRAP_PATH"
+"$RUNTIME_BOOTSTRAP_PATH" "$SOURCE_SHA"
+[ ! -e "$RUNTIME_BOOTSTRAP_PATH" ] && [ ! -L "$RUNTIME_BOOTSTRAP_PATH" ] \
+  || die "runtime bootstrap did not remove its temporary fixed path"
+RUNTIME_BOOTSTRAP_STAGED=0
 
-for target in \
-  "$LIBEXEC_DIR/deploy-gce.sh" \
-  "$LIBEXEC_DIR/verify-runtime-artifact.mjs" \
-  "$SBIN_DIR/deploy-personal-orbit"
-do
-  [ "$(stat --format='%U:%G:%a' "$target")" = "root:root:755" ] || die "installed ownership/mode mismatch: $target"
-done
-
-BOOTSTRAP_STAGED=1
+TUNNEL_BOOTSTRAP_STAGED=1
 install -o root -g root -m 0755 \
   "$TEMP_DIR/bootstrap-gce-tunnel-ops-delegation" "$TUNNEL_BOOTSTRAP_PATH"
 "$TUNNEL_BOOTSTRAP_PATH" "$SOURCE_SHA"
 [ ! -e "$TUNNEL_BOOTSTRAP_PATH" ] && [ ! -L "$TUNNEL_BOOTSTRAP_PATH" ] \
   || die "Tunnel bootstrap did not remove its temporary fixed path"
-BOOTSTRAP_STAGED=0
+TUNNEL_BOOTSTRAP_STAGED=0
 
 printf '%s\n' "personal-orbit-helper-install: installed verified helpers from main $SOURCE_SHA"

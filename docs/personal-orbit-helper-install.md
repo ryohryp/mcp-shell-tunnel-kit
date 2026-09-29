@@ -14,13 +14,9 @@ with no caller-controlled arguments. The root installer checks the repository ow
 
 The same fixed no-argument root installer also runs the one-time Tunnel delegation bootstrap from `ops/bootstrap-gce-tunnel-ops-delegation` at that reviewed SHA. The nested bootstrap installs only the root-owned fixed Tunnel restart wrapper and the production runner's exact no-argument sudoers grant, validates `visudo`, and removes its temporary bootstrap path on success. It does not restart the Tunnel or Personal Orbit service, deploy the app, change secrets, modify IAM, or grant general sudo. If bootstrap installation fails, it restores the previous Tunnel wrapper and sudoers state; the outer installer removes the temporary bootstrap executable. The pre-existing deployment helpers may already have been refreshed from the same reviewed SHA before a bootstrap failure.
 
-The existing deploy-helper files are also installed from the same reviewed Git object:
+The installer now stages and executes the reviewed `ops/bootstrap-gce-runtime-artifact` from the same exact Personal Orbit main Git object. That nested bootstrap owns the current protected-artifact boundary and installs only its reviewed targets: `deploy-gce.sh`, `verify-github-runtime-artifact.mjs`, `deploy-personal-orbit-artifact`, and the exact runtime-artifact sudoers grant. It verifies the existing restart wrapper, validates `visudo`, checks the dedicated production runner identity, and removes its temporary bootstrap path after success.
 
-- `ops/deploy-gce.sh` -> `/usr/local/libexec/personal-orbit/deploy-gce.sh`
-- `ops/verify-runtime-artifact.mjs` -> `/usr/local/libexec/personal-orbit/verify-runtime-artifact.mjs`
-- `ops/deploy-personal-orbit` -> `/usr/local/sbin/deploy-personal-orbit`
-
-Installed helper executables and the Tunnel wrapper are `root:root 0755`; the sudoers entry is `root:root 0440`. The installer syntax-checks the installed shell/Node helpers. Its only sudoers change is the inner bootstrap's exact, no-argument Tunnel restart grant; it does not restart a service, deploy application code, change secrets, or modify IAM.
+The outer installer no longer copies the legacy `verify-runtime-artifact.mjs` or `deploy-personal-orbit` helpers directly. This keeps the MCP capability aligned with the current Personal Orbit artifact bootstrap instead of duplicating its privileged-file policy. The Tunnel restart bootstrap remains separate and fixed. Neither bootstrap restarts a service, deploys application code, changes secrets, or modifies IAM.
 
 ## Bootstrap
 
