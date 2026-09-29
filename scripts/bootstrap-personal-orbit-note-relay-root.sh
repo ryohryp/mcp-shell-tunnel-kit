@@ -21,7 +21,7 @@ die() {
 [ "$(/usr/bin/id -u)" -eq 0 ] || die "must run as root"
 [ -d "$REPO/.git" ] || die "configured Personal Orbit repository is not a Git worktree"
 
-for command in /bin/rm /usr/bin/bash /usr/bin/cmp /usr/bin/git /usr/bin/install /usr/bin/mktemp /usr/bin/readlink /usr/bin/stat /usr/sbin/runuser /usr/sbin/visudo; do
+for command in /bin/rm /usr/bin/bash /usr/bin/cmp /usr/bin/git /usr/bin/grep /usr/bin/id /usr/bin/install /usr/bin/mktemp /usr/bin/readlink /usr/bin/stat /usr/sbin/runuser /usr/sbin/visudo; do
   [ -x "$command" ] || die "required executable is missing: $command"
 done
 
@@ -30,6 +30,18 @@ done
 [ -f "$SELF_SUDOERS" ] && [ ! -L "$SELF_SUDOERS" ] || die "bootstrap sudoers file is unavailable"
 [ "$(/usr/bin/stat --format='%U:%G:%a' "$SELF_SUDOERS")" = "root:root:440" ] || die "bootstrap sudoers ownership/mode is invalid"
 /usr/sbin/visudo -cf "$SELF_SUDOERS" >/dev/null
+
+sudo_user="${SUDO_USER:-}"
+[ -n "$sudo_user" ] || die "installer must be invoked through sudo"
+case "$sudo_user" in
+  root|*[!A-Za-z0-9_.-]*) die "sudo caller identity is invalid" ;;
+esac
+/usr/bin/id "$sudo_user" >/dev/null 2>&1 || die "sudo caller identity does not exist"
+[ "$(/usr/bin/id -u "$sudo_user")" -ne 0 ] || die "sudo caller must be unprivileged"
+[ "${SUDO_COMMAND:-}" = "$SELF_PATH" ] || die "sudo command does not match the fixed installer path"
+expected_sudo_rule="$sudo_user ALL=(root) NOPASSWD: $SELF_PATH"
+actual_sudo_rule=$(/usr/bin/grep -Ev '^[[:space:]]*(#|$)' "$SELF_SUDOERS" || true)
+[ "$actual_sudo_rule" = "$expected_sudo_rule" ] || die "bootstrap sudoers rule is broader than the fixed installer command"
 
 origin_url=$(/usr/sbin/runuser --user "$DEPLOY_USER" -- /usr/bin/git -C "$REPO" -c safe.directory="$REPO" remote get-url "$REMOTE")   || die "origin is unavailable"
 case "$origin_url" in
