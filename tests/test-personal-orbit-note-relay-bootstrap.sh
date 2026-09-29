@@ -36,6 +36,9 @@ grep -F '/bin/rm -f -- "$SELF_PATH"' "$R" >/dev/null   || fail "one-time root in
 grep -F "export PATH='/usr/sbin:/usr/bin:/sbin:/bin'" "$R" >/dev/null   || fail "root bootstrap does not pin PATH"
 grep -F 'target_installed=1' "$R" >/dev/null   || fail "temporary child bootstrap installation is not tracked"
 grep -F '/bin/rm -f -- "$TARGET_BOOTSTRAP"' "$R" >/dev/null   || fail "failed child bootstrap cleanup is missing"
+grep -F '[ "${SUDO_COMMAND:-}" = "$SELF_PATH" ]' "$R" >/dev/null   || fail "sudo command identity is not checked"
+grep -F 'expected_sudo_rule="$sudo_user ALL=(root) NOPASSWD: $SELF_PATH"' "$R" >/dev/null   || fail "exact sudo rule is not constructed"
+grep -F '[ "$actual_sudo_rule" = "$expected_sudo_rule" ]' "$R" >/dev/null   || fail "installed sudoers rule is not checked exactly"
 
 if grep -E 'systemctl|NOTE_PUBLICATION_V3_RELAY_MODE|configure-note-publication-relay[[:space:]]+(off|poll)|(^|[^[:alnum:]_])sudo[[:space:]]' "$R" >/dev/null; then
   fail "root bootstrap contains an unrelated execution/configuration surface"
