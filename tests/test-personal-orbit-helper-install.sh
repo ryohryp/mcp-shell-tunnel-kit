@@ -27,8 +27,15 @@ grep -F "[ -z \"\$checkout_branch\" ] || [ \"\$checkout_branch\" = \"main\" ]" "
   || fail "only detached HEAD or main branch may be used"
 grep -F "repo_git merge-base --is-ancestor \"\$checkout_sha\" \"\$SOURCE_SHA\"" "$ROOT" >/dev/null \
   || fail "checkout HEAD must belong to reviewed origin/main history"
-grep -F 'ops/verify-runtime-artifact.mjs' "$ROOT" >/dev/null || fail "runtime verifier is not installed"
-grep -F 'ops/deploy-personal-orbit' "$ROOT" >/dev/null || fail "root deploy wrapper is not installed"
+grep -F 'ops/bootstrap-gce-runtime-artifact' "$ROOT" >/dev/null || fail "protected runtime bootstrap source is not pinned"
+grep -F '"$RUNTIME_BOOTSTRAP_PATH" "$SOURCE_SHA"' "$ROOT" >/dev/null || fail "root installer does not execute the SHA-bound runtime bootstrap"
+grep -F 'runtime bootstrap did not remove its temporary fixed path' "$ROOT" >/dev/null || fail "temporary runtime bootstrap cleanup is not checked"
+if grep -F 'ops/verify-runtime-artifact.mjs' "$ROOT" >/dev/null; then
+  fail "legacy runtime verifier must not be installed directly"
+fi
+if grep -F 'ops/deploy-personal-orbit"' "$ROOT" >/dev/null; then
+  fail "legacy deploy wrapper must not be installed directly"
+fi
 grep -F 'EXPECTED_ORIGIN="git@github.com:ryohryp/personal-orbit.git"' "$ROOT" >/dev/null || fail "exact Personal Orbit origin is not pinned"
 grep -F 'repo_git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main' "$ROOT" >/dev/null || fail "root installer does not fetch origin/main without checking out"
 grep -F 'MAIN_REF="refs/remotes/origin/main"' "$ROOT" >/dev/null || fail "origin/main ref is not pinned"
