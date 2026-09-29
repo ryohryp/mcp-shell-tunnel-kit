@@ -5,6 +5,7 @@ REPO="/home/ryohryp/personal-orbit"
 DEPLOY_USER="ryohryp"
 REMOTE="origin"
 SOURCE_REF="refs/remotes/origin/main"
+EXPECTED_SHA="4ab8ffc4e188b4dd174227779337d4a5d585c3f2"
 SOURCE_PATH="ops/bootstrap-note-publication-relay-ops"
 TARGET_BOOTSTRAP="/usr/local/sbin/bootstrap-note-publication-relay-ops"
 SELF_PATH="/usr/local/sbin/bootstrap-personal-orbit-note-relay"
@@ -41,6 +42,7 @@ source_sha=$(runuser --user "$DEPLOY_USER" -- git -C "$REPO" -c safe.directory="
 case "$source_sha" in
   *[!0-9a-f]*) die "origin/main SHA is invalid" ;;
 esac
+[ "$source_sha" = "$EXPECTED_SHA" ]   || die "origin/main moved after approval; refusing unreviewed bootstrap source"
 
 [ ! -L "$TARGET_BOOTSTRAP" ] || die "target bootstrap must not be a symlink"
 [ ! -e "$TARGET_BOOTSTRAP" ] || die "target bootstrap already exists; refusing to replace it"
