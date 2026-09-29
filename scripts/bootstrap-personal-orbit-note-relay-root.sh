@@ -37,11 +37,9 @@ esac
 
 runuser --user "$DEPLOY_USER" -- git -C "$REPO" -c safe.directory="$REPO"   fetch --no-tags "$REMOTE" "refs/heads/main:$SOURCE_REF"   || die "origin/main fetch failed"
 source_sha=$(runuser --user "$DEPLOY_USER" -- git -C "$REPO" -c safe.directory="$REPO" rev-parse --verify "$SOURCE_REF")   || die "origin/main could not be resolved"
+[ "${#source_sha}" -eq 40 ] || die "origin/main SHA is invalid"
 case "$source_sha" in
-  [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*)
-    [ "${#source_sha}" -eq 40 ] || die "origin/main SHA is invalid"
-    ;;
-  *) die "origin/main SHA is invalid" ;;
+  *[!0-9a-f]*) die "origin/main SHA is invalid" ;;
 esac
 
 [ ! -L "$TARGET_BOOTSTRAP" ] || die "target bootstrap must not be a symlink"
