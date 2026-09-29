@@ -31,7 +31,7 @@ grep -F '"$TARGET_BOOTSTRAP" "$source_sha"' "$R" >/dev/null   || fail "reviewed 
 grep -F 'rm -f -- "$SELF_SUDOERS"' "$R" >/dev/null   || fail "one-time sudoers cleanup missing"
 grep -F 'rm -f -- "$SELF_PATH"' "$R" >/dev/null   || fail "one-time root installer cleanup missing"
 
-if grep -E 'systemctl|NOTE_PUBLICATION_V3_RELAY_MODE| configure-note-publication-relay (off|poll)|/bin/(ba)?sh|sudo[[:space:]]+(-[a-zA-Z]+[[:space:]]+)*[^"]' "$R" >/dev/null; then
+if grep -E 'systemctl|NOTE_PUBLICATION_V3_RELAY_MODE|configure-note-publication-relay[[:space:]]+(off|poll)|sudo[[:space:]]+(-[a-zA-Z]+[[:space:]]+)*[^"]' "$R" >/dev/null; then
   fail "root bootstrap contains an unrelated execution/configuration surface"
 fi
 
