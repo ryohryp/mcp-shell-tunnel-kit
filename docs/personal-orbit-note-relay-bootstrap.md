@@ -6,7 +6,9 @@ This optional capability exists only to install Personal Orbit's reviewed, bound
 
 The MCP-visible `personal_orbit_note_relay_bootstrap` mapping accepts no arguments and invokes only the root-owned `/usr/local/sbin/bootstrap-personal-orbit-note-relay` installer.
 
-The root installer:
+The root installer first requires a real unprivileged `sudo` caller, requires `SUDO_COMMAND` to equal the fixed installer path, and verifies that the sudoers fragment's only active rule grants that caller exactly this installer and nothing broader.
+
+The root installer then:
 
 1. pins `/home/ryohryp/personal-orbit` and the expected GitHub origin;
 2. fetches only `origin/main` as the unprivileged `ryohryp` deploy user;
