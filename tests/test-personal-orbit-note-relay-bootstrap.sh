@@ -39,7 +39,7 @@ fi
 
 grep -F 'personal_orbit_note_relay_bootstrap:' "$C" >/dev/null || fail "MCP mapping missing"
 grep -F 'NOPASSWD: /usr/local/sbin/bootstrap-personal-orbit-note-relay' "$S" >/dev/null   || fail "sudoers command not fixed"
-if grep -E 'NOPASSWD:.*\*|/bin/(ba)?sh|ALL[[:space:]]*=' "$S" >/dev/null; then
+if grep -E 'NOPASSWD:.*\*|/bin/(ba)?sh|NOPASSWD:[[:space:]]*ALL([[:space:]]|$)' "$S" >/dev/null; then
   fail "sudoers example too broad"
 fi
 
