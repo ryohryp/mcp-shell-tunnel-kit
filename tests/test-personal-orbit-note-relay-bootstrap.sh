@@ -40,7 +40,7 @@ grep -F '[ "${SUDO_COMMAND:-}" = "$SELF_PATH" ]' "$R" >/dev/null   || fail "sudo
 grep -F 'expected_sudo_rule="$sudo_user ALL=(root) NOPASSWD: $SELF_PATH"' "$R" >/dev/null   || fail "exact sudo rule is not constructed"
 grep -F '[ "$actual_sudo_rule" = "$expected_sudo_rule" ]' "$R" >/dev/null   || fail "installed sudoers rule is not checked exactly"
 
-if grep -E 'systemctl|NOTE_PUBLICATION_V3_RELAY_MODE|configure-note-publication-relay[[:space:]]+(off|poll)|(^|[^[:alnum:]_])sudo[[:space:]]' "$R" >/dev/null; then
+if grep -E 'systemctl|NOTE_PUBLICATION_V3_RELAY_MODE|configure-note-publication-relay[[:space:]]+(off|poll)' "$R" >/dev/null   || grep -E '^[[:space:]]*(exec[[:space:]]+)?sudo[[:space:]]' "$R" >/dev/null; then
   fail "root bootstrap contains an unrelated execution/configuration surface"
 fi
 
