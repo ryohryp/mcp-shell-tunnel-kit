@@ -12,8 +12,8 @@ The root installer then:
 
 1. pins `/home/ryohryp/personal-orbit` and the expected GitHub origin;
 2. fetches only `origin/main` as the unprivileged `ryohryp` deploy user;
-3. requires that fetched main to equal the exact Personal Orbit SHA approved for this one-time bootstrap (`4ab8ffc4e188b4dd174227779337d4a5d585c3f2`);
-4. extracts exactly `ops/bootstrap-note-publication-relay-ops` from that approved Git object;
+3. verifies that the fetched main contains the exact approved Git blobs for the relay bootstrap, relay wrapper, environment helper, and relay GitHub workflow;
+4. extracts exactly `ops/bootstrap-note-publication-relay-ops` from that verified current-main Git object;
 5. syntax-checks and installs that reviewed bootstrap temporarily as `root:root 0755`;
 6. invokes it with the exact fetched SHA;
 7. requires the Personal Orbit bootstrap to self-remove after success; and
@@ -37,4 +37,4 @@ Enabling this capability changes the live MCP authorization boundary and cannot 
 
 After a successful invocation, the one-time root installer and its sudoers entry are removed automatically. Relay mode remains unchanged; enabling `poll` is a separate Personal Orbit production configuration action.
 
-If Personal Orbit `main` moves away from the pinned approved SHA before this capability is invoked, the installer fails closed. Update/re-review this one-time capability instead of silently accepting a newer main commit.
+Unrelated Personal Orbit `main` changes do not require repinning. The installer follows current `origin/main` only when all four approved relay execution blobs remain byte-identical. If any relay bootstrap/wrapper/helper/workflow blob changes, it fails closed and requires review of the new blob set.
