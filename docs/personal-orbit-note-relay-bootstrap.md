@@ -12,7 +12,7 @@ The root installer then:
 
 1. pins `/home/ryohryp/personal-orbit` and the expected GitHub origin;
 2. fetches only `origin/main` as the unprivileged `ryohryp` deploy user;
-3. requires that fetched main to equal the exact Personal Orbit SHA approved for this one-time bootstrap (`4ab8ffc4e188b4dd174227779337d4a5d585c3f2`);
+3. requires that fetched main to equal the exact Personal Orbit SHA approved for this one-time bootstrap (`91cfd56a62197ba6bd56cb017ab2c452dc16b771`);
 4. extracts exactly `ops/bootstrap-note-publication-relay-ops` from that approved Git object;
 5. syntax-checks and installs that reviewed bootstrap temporarily as `root:root 0755`;
 6. invokes it with the exact fetched SHA;
