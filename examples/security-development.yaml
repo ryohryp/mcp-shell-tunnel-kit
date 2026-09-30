@@ -26,3 +26,8 @@ security:
     # current Personal Orbit main checkout, then invokes one fixed sudo command.
     # The separately installed root script and sudoers rule must also be reviewed.
     # personal_orbit_helper_install: ["/opt/mcp-shell-tunnel-kit/scripts/install-personal-orbit-deploy-helpers.sh"]
+
+    # OPTIONAL Personal Orbit note relay bootstrap. This no-argument wrapper invokes
+    # only the separately installed one-time root bootstrap. It installs relay
+    # control helpers but does not enable relay mode or restart Personal Orbit.
+    # personal_orbit_note_relay_bootstrap: ["/opt/mcp-shell-tunnel-kit/scripts/bootstrap-personal-orbit-note-relay.sh"]

@@ -24,8 +24,12 @@ jobs:
           dash -n scripts/install-personal-orbit-deploy-helpers.sh
           dash -n scripts/install-personal-orbit-deploy-helpers-root.sh
           dash -n tests/test-personal-orbit-helper-install.sh
+          dash -n scripts/bootstrap-personal-orbit-note-relay.sh
+          dash -n scripts/bootstrap-personal-orbit-note-relay-root.sh
+          dash -n tests/test-personal-orbit-note-relay-bootstrap.sh
       - name: Run offline regression tests
         run: |
           dash tests/test-verify-linux-readonly.sh
           dash tests/test-verify-linux-posture.sh
           dash tests/test-personal-orbit-helper-install.sh
+          dash tests/test-personal-orbit-note-relay-bootstrap.sh
