@@ -24,7 +24,7 @@ grep -F 'SUDO="/usr/bin/sudo"' "$W" >/dev/null || fail "sudo path is not pinned"
 grep -F 'exec "$SUDO" -- "$ROOT_INSTALLER"' "$W" >/dev/null   || fail "MCP wrapper fixed sudo invocation missing"
 
 grep -F 'REPO="/home/ryohryp/personal-orbit"' "$R" >/dev/null || fail "Personal Orbit repo is not pinned"
-grep -F 'EXPECTED_SHA="4ab8ffc4e188b4dd174227779337d4a5d585c3f2"' "$R" >/dev/null   || fail "approved Personal Orbit main SHA is not pinned"
+grep -F 'EXPECTED_SHA="91cfd56a62197ba6bd56cb017ab2c452dc16b771"' "$R" >/dev/null   || fail "approved Personal Orbit main SHA is not pinned"
 grep -F 'SOURCE_PATH="ops/bootstrap-note-publication-relay-ops"' "$R" >/dev/null   || fail "Personal Orbit reviewed bootstrap source is not pinned"
 grep -F 'TARGET_BOOTSTRAP="/usr/local/sbin/bootstrap-note-publication-relay-ops"' "$R" >/dev/null   || fail "Personal Orbit bootstrap target is not pinned"
 grep -F 'fetch --no-tags "$REMOTE" "refs/heads/main:$SOURCE_REF"' "$R" >/dev/null   || fail "current origin/main fetch is missing"
