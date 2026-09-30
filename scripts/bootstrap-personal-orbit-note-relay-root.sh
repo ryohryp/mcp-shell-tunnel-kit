@@ -6,8 +6,14 @@ REPO="/home/ryohryp/personal-orbit"
 DEPLOY_USER="ryohryp"
 REMOTE="origin"
 SOURCE_REF="refs/remotes/origin/main"
-EXPECTED_SHA="91cfd56a62197ba6bd56cb017ab2c452dc16b771"
 SOURCE_PATH="ops/bootstrap-note-publication-relay-ops"
+WRAPPER_SOURCE_PATH="ops/configure-note-publication-relay"
+HELPER_SOURCE_PATH="ops/configure-note-publication-relay-env.sh"
+WORKFLOW_SOURCE_PATH=".github/workflows/configure-note-publication-relay.yml"
+EXPECTED_SOURCE_BLOB="9aae8b09b846119beea7fac756e2bc4fe67bb43f"
+EXPECTED_WRAPPER_BLOB="3ca45a109a65cd545c43a7070b059a4378b7b27d"
+EXPECTED_HELPER_BLOB="b92d4cac36a431d19810486a20ec43dff422e9ab"
+EXPECTED_WORKFLOW_BLOB="42ffaa7612d73dfc4768c8f8f4c26b6423870e0e"
 TARGET_BOOTSTRAP="/usr/local/sbin/bootstrap-note-publication-relay-ops"
 SELF_PATH="/usr/local/sbin/bootstrap-personal-orbit-note-relay"
 SELF_SUDOERS="/etc/sudoers.d/mcp-shell-personal-orbit-note-relay-bootstrap"
@@ -55,7 +61,17 @@ source_sha=$(/usr/sbin/runuser --user "$DEPLOY_USER" -- /usr/bin/git -C "$REPO" 
 case "$source_sha" in
   *[!0-9a-f]*) die "origin/main SHA is invalid" ;;
 esac
-[ "$source_sha" = "$EXPECTED_SHA" ]   || die "origin/main moved after approval; refusing unreviewed bootstrap source"
+verify_blob() {
+  path="$1"
+  expected="$2"
+  actual=$(/usr/sbin/runuser --user "$DEPLOY_USER" -- /usr/bin/git -C "$REPO" -c safe.directory="$REPO"     rev-parse --verify "$source_sha:$path") || die "reviewed source path is unavailable: $path"
+  [ "$actual" = "$expected" ] || die "reviewed source blob mismatch: $path"
+}
+
+verify_blob "$SOURCE_PATH" "$EXPECTED_SOURCE_BLOB"
+verify_blob "$WRAPPER_SOURCE_PATH" "$EXPECTED_WRAPPER_BLOB"
+verify_blob "$HELPER_SOURCE_PATH" "$EXPECTED_HELPER_BLOB"
+verify_blob "$WORKFLOW_SOURCE_PATH" "$EXPECTED_WORKFLOW_BLOB"
 
 [ ! -L "$TARGET_BOOTSTRAP" ] || die "target bootstrap must not be a symlink"
 [ ! -e "$TARGET_BOOTSTRAP" ] || die "target bootstrap already exists; refusing to replace it"
