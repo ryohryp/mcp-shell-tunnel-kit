@@ -4,6 +4,12 @@ Run these checks after publishing or re-publishing the **MCP Shell Tunnel Contro
 
 Use only synthetic capability names and the Site's own declarative metadata. Do not include credentials, hostnames, private paths, tunnel IDs, private IPs, or production logs.
 
+## 0. Access boundary
+
+Before tool testing, confirm the Site and its generated plugin are restricted to the intended user/workspace and are not publicly discoverable.
+
+If the access boundary is broader than intended, stop and fix sharing/access before continuing.
+
 ## 1. Tool catalog
 
 Confirm the connected Site plugin exposes exactly:
