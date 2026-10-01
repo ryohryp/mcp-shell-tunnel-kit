@@ -32,6 +32,14 @@ It must not:
 - proxy or relay commands to a host
 - store hostnames, URLs, IP addresses, credentials, tokens, tunnel IDs, private keys, or other connection details
 
+## Publication access
+
+For this PoC, use the most restrictive Site access mode available to the intended user/workspace. Do **not** make the Site or its generated plugin publicly discoverable.
+
+Treat Site sharing and plugin access as separate controls. Grant access only to the intended user/workspace during the PoC, and re-check both after every publish or re-publish.
+
+Public or broadly shared access requires a separate security review because the Site describes internal capability boundaries even though it does not contain connection details or perform execution.
+
 ## Required MCP tool boundary
 
 The Site must expose exactly these three tools.
@@ -149,6 +157,8 @@ When creating or editing the Site, use the current contents of `policy.js`, `tar
 Register exactly the three tools documented above and preserve their schemas and read-only hints. Do not add additional tools, command relays, arbitrary HTTP forwarding, generic shell inputs, or connection configuration.
 
 For a first publication, leave the target registry empty unless non-secret declarative metadata has been explicitly reviewed.
+
+Publish with restricted/private access for the intended user/workspace. Do not enable public discoverability for the PoC.
 
 Only publish after the Site source matches repository `main`.
 
