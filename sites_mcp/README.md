@@ -68,3 +68,9 @@ npm test
 ```
 
 The tests are offline and verify that execution capabilities remain host-local and that connection details cannot be represented in the Sites target registry.
+
+## Publish and verify
+
+For Site creation or updates, follow [SITE_UPDATE.md](SITE_UPDATE.md). The repository remains the source of truth; re-publishing a previously saved Site is not a substitute for synchronizing the current implementation.
+
+After publishing, run the synthetic [SMOKE_TEST.md](SMOKE_TEST.md) contract before treating the Site control plane as ready.
