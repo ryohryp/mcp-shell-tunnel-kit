@@ -15,6 +15,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Check POSIX shell syntax
         run: |
           dash -n scripts/verify-linux-readonly.sh
@@ -33,3 +36,5 @@ jobs:
           dash tests/test-verify-linux-posture.sh
           dash tests/test-personal-orbit-helper-install.sh
           dash tests/test-personal-orbit-note-relay-bootstrap.sh
+      - name: Run Sites control-plane tests
+        run: npm test --prefix sites_mcp

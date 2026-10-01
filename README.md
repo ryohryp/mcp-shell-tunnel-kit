@@ -36,6 +36,24 @@ mcp-shell (secure mode)
 
 The Tunnel connects to an operator-managed local MCP target; you do not need to expose an inbound MCP port on the VM.
 
+## Experimental ChatGPT Sites control plane
+
+This repository also contains an experimental, **non-executing** Sites MCP layer in [`sites_mcp/`](sites_mcp/README.md).
+
+The Sites layer is intentionally limited to control-plane responsibilities such as describing policy, listing non-secret declarative target metadata, and routing a requested capability. It does **not** replace the Secure MCP Tunnel or `mcp-shell`, and it does not proxy shell commands. Filesystem access, Git operations, live host inspection, and bounded command execution remain on the host-local executor.
+
+```text
+ChatGPT
+  |-- Sites MCP control plane (host-independent, read-only)
+  '-- OpenAI Secure MCP Tunnel
+        |
+        tunnel-client
+        |
+        mcp-shell on the target environment
+```
+
+This split keeps target-local execution next to the target filesystem/processes while allowing host-independent policy and discovery logic to move into Sites incrementally.
+
 ## Quick start
 
 1. Follow upstream instructions to install the pinned [mcp-shell v1.0.0](https://github.com/sonirico/mcp-shell/tree/v1.0.0) and [tunnel-client v0.0.14](https://github.com/openai/tunnel-client/tree/v0.0.14) on a Linux VM. Verify release artifacts independently.
