@@ -54,6 +54,8 @@ ChatGPT
 
 This split keeps target-local execution next to the target filesystem/processes while allowing host-independent policy and discovery logic to move into Sites incrementally.
 
+See [`sites_mcp/SITE_UPDATE.md`](sites_mcp/SITE_UPDATE.md) for the publish/update contract and [`sites_mcp/SMOKE_TEST.md`](sites_mcp/SMOKE_TEST.md) for post-publish verification.
+
 ## Quick start
 
 1. Follow upstream instructions to install the pinned [mcp-shell v1.0.0](https://github.com/sonirico/mcp-shell/tree/v1.0.0) and [tunnel-client v0.0.14](https://github.com/openai/tunnel-client/tree/v0.0.14) on a Linux VM. Verify release artifacts independently.
