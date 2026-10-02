@@ -1,4 +1,5 @@
 import net from "node:net";
+import dns from "node:dns/promises";
 
 export const LIMITS = Object.freeze({
   maxActions: 12,
@@ -11,7 +12,6 @@ export const ALLOWED_ACTIONS = Object.freeze([
   "navigate",
   "follow_link",
   "click",
-  "fill_text",
   "back",
 ]);
 
@@ -43,14 +43,24 @@ export function validatePublicUrl(value) {
   return { status: "ok", url: url.toString(), hostname: host };
 }
 
+export async function validateResolvedPublicUrl(value, lookup = dns.lookup) {
+  const checked = validatePublicUrl(value);
+  if (checked.status !== "ok") return checked;
+  if (net.isIP(checked.hostname)) return checked;
+  let addresses;
+  try { addresses = await lookup(checked.hostname, {all:true, verbatim:true}); }
+  catch { return fail("dns_resolution_failed"); }
+  if (!addresses.length || addresses.some(({address}) => isBlockedIp(address))) {
+    return fail("blocked_resolved_destination");
+  }
+  return {...checked, resolved_addresses: addresses.map(x=>x.address)};
+}
+
 export function validateAction(action) {
   if (!action || typeof action !== "object") return fail("invalid_action");
   if (!ALLOWED_ACTIONS.includes(action.type)) return fail("action_not_allowed");
   if (action.type === "navigate") return validatePublicUrl(action.url);
-  if (action.type === "fill_text" && (typeof action.text !== "string" || action.text.length > 500)) {
-    return fail("invalid_text");
-  }
-  if (["follow_link","click","fill_text"].includes(action.type) &&
+  if (["follow_link","click"].includes(action.type) &&
       (typeof action.ref !== "string" || !/^[A-Za-z0-9_-]{1,80}$/.test(action.ref))) {
     return fail("invalid_ref");
   }
