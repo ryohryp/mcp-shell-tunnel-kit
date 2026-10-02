@@ -26,6 +26,7 @@ test("execution-related capabilities always stay on the host-local executor", ()
       capability,
       route: "host_local_executor",
       requires_host_local_executor: true,
+      requires_browser_executor: false,
     });
   }
 });
@@ -36,7 +37,18 @@ test("Sites-only capabilities remain read-only control-plane operations", () => 
     assert.equal(routed.status, "ok");
     assert.equal(routed.route, "sites_control_plane");
     assert.equal(routed.requires_host_local_executor, false);
+    assert.equal(routed.requires_browser_executor, false);
   }
+});
+
+test("browser reads route to the distinct browser executor without executing in Sites", () => {
+  assert.deepEqual(routeCapability("browser_read"), {
+    status: "ok",
+    capability: "browser_read",
+    route: "browser_executor",
+    requires_host_local_executor: false,
+    requires_browser_executor: true,
+  });
 });
 
 test("safe declarative target metadata is accepted", () => {
