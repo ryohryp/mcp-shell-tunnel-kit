@@ -1,0 +1,16 @@
+{
+  "name": "gce-fast-browser-mcp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check policy.js && node --check contracts.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "playwright-core": "1.55.0"
+  }
+}

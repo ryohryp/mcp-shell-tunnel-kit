@@ -1,6 +1,7 @@
 const ROUTES = Object.freeze({
   policy_info: "sites_control_plane",
   target_discovery: "sites_control_plane",
+  browser_read: "browser_executor",
   filesystem_read: "host_local_executor",
   filesystem_write: "host_local_executor",
   git_read: "host_local_executor",
@@ -27,6 +28,7 @@ export function routeCapability(capability) {
     capability,
     route,
     requires_host_local_executor: route === "host_local_executor",
+    requires_browser_executor: route === "browser_executor",
   };
 }
 
@@ -39,6 +41,7 @@ export function describePolicy() {
         "policy_info",
         "target_discovery",
       ],
+      browser_executor: ["browser_read"],
       host_local_executor: [
         "filesystem_read",
         "filesystem_write",
@@ -75,6 +78,7 @@ export function describePolicy() {
       "Sites does not read or write target filesystems.",
       "Sites does not perform Git operations against target workspaces.",
       "Sites does not store target connection details or credentials.",
+      "Sites routes browser_read to a distinct browser executor and does not proxy browser actions.",
       "Execution remains on the host-local mcp-shell executor reached through the Secure MCP Tunnel.",
     ],
   };
