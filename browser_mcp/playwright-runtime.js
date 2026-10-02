@@ -1,5 +1,5 @@
 import { chromium } from "playwright-core";
-import { validatePublicUrl, validateAction, LIMITS } from "./policy.js";
+import { validateResolvedPublicUrl, validateAction, LIMITS } from "./policy.js";
 
 export async function createPlaywrightRuntime({ executablePath } = {}) {
   const browser = await chromium.launch({
@@ -21,7 +21,7 @@ export async function createPlaywrightRuntime({ executablePath } = {}) {
   }
 
   async function guardRequest(route) {
-    const checked = validatePublicUrl(route.request().url());
+    const checked = await validateResolvedPublicUrl(route.request().url());
     if (checked.status !== "ok") return route.abort("blockedbyclient");
     return route.continue();
   }
@@ -29,7 +29,7 @@ export async function createPlaywrightRuntime({ executablePath } = {}) {
 
   async function navigate(url) {
     budget();
-    const checked = validatePublicUrl(url);
+    const checked = await validateResolvedPublicUrl(url);
     if (checked.status !== "ok") return checked;
     actions++;
     const response = await page.goto(checked.url, {waitUntil:"domcontentloaded", timeout:10_000});
@@ -50,18 +50,18 @@ export async function createPlaywrightRuntime({ executablePath } = {}) {
     budget();
     const checked=validateAction(action);
     if (checked.status !== "ok") return checked;
-    actions++;
-    if (action.type === "back") { await page.goBack({waitUntil:"domcontentloaded"}); return {status:"ok",url:page.url()}; }
+    if (action.type === "back") { actions++; await page.goBack({waitUntil:"domcontentloaded"}); return {status:"ok",url:page.url()}; }
     if (action.type === "navigate") return navigate(action.url);
     const match=/^link_(\d+)$/.exec(action.ref ?? "");
     if (!match) return {status:"failed",error:"unsupported_ref",detail:"MVP runtime currently acts on link refs only"};
     const link=page.getByRole("link").nth(Number(match[1]));
     if (action.type === "follow_link" || action.type === "click") {
+      actions++;
       await link.click({timeout:5_000});
       await page.waitForLoadState("domcontentloaded").catch(()=>{});
       return {status:"ok",url:page.url()};
     }
-    return {status:"failed",error:"unsupported_action",detail:"fill_text runtime wiring is deferred"};
+    return {status:"failed",error:"unsupported_action",detail:"action is not implemented by the MVP runtime"};
   }
 
   return {
