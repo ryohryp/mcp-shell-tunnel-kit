@@ -38,3 +38,7 @@ jobs:
           dash tests/test-personal-orbit-note-relay-bootstrap.sh
       - name: Run Sites control-plane tests
         run: npm test --prefix sites_mcp
+      - name: Run browser policy tests
+        run: |
+          npm run check --prefix browser_mcp
+          npm test --prefix browser_mcp
