@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -22,11 +22,19 @@ The MVP is deliberately read-oriented:
 - no file uploads/downloads
 - no arbitrary JavaScript
 - semantic/accessibility refs are the primary action surface
-- allowlisted actions only: navigate, follow link, click safe controls, fill non-sensitive search/text fields, back
-- strict action/time/snapshot budgets
+- allowlisted actions only: navigate, follow/click validated link refs, and back
+- text entry remains disabled until a separately reviewed safe-field policy exists
+- strict action/time/snapshot/redirect budgets
 - private, loopback, link-local, metadata-service and non-HTTP(S) destinations fail closed
 
 Jev is an advisory System One layer. It can choose among already-extracted bounded action candidates and judge semantic completion. It cannot expand the action allowlist, bypass network policy, or authorize side effects. Exact URL/network validation and execution budgets remain deterministic.
+
+For bounded goal execution, the judge adapter may return only:
+
+- `{ "decision": "complete" }`
+- `{ "decision": "act", "candidate_ref": "<one supplied ref>" }`
+
+Any other output, a candidate not present in the supplied set, a judge error, or a judge timeout fails closed. Browser/tool failures remain distinguishable from judge failures.
 
 ## Execution model
 
@@ -39,16 +47,18 @@ Sites control plane
        -> Playwright Chromium
        -> accessibility snapshot + bounded candidates
        -> optional Jev choice
-       -> deterministic action validator
-       -> Playwright action
-       -> deterministic + semantic verification
+       -> deterministic candidate/action validator
+       -> validated link navigation
+       -> independent deterministic verify
+       -> optional semantic completion judgment
 ```
 
-For `execute_goal`, the fast loop remains inside GCE so individual clicks do not require a ChatGPT/Sites round trip.
+For `execute_goal`, the fast loop remains inside GCE so individual actions do not require a ChatGPT/Sites round trip. `browser_verify` checks the current resolved URL against the same public-network policy and obtains a fresh bounded snapshot after an action.
 
 ## Consequences
 
 - Existing Secure MCP Tunnel and mcp-shell remain unchanged.
 - Existing Sites tools remain non-executing.
 - Browser execution can evolve independently and can later support stronger profiles only through a separate reviewed policy.
+- The MVP goal loop is intentionally link-navigation only; safe form entry requires a separate policy change.
 - Live GCE deployment is a production/runtime change and requires explicit operator approval.
