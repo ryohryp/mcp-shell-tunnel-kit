@@ -18,6 +18,8 @@ For Personal Orbit note article publication, use the existing [authenticated Git
 
 For the separately approved one-time installation of Personal Orbit's bounded relay-control wrapper, see [Bounded Personal Orbit note relay bootstrap](docs/personal-orbit-note-relay-bootstrap.md). That optional MCP capability installs control plumbing only; it does not select `off` or `poll`, restart Personal Orbit, or publish content.
 
+For the narrower protected-runtime authorization update, see [Bounded Personal Orbit runtime-artifact bootstrap](docs/personal-orbit-runtime-artifact-bootstrap.md). That optional no-argument capability applies only the reviewed runtime-artifact bootstrap from the current Personal Orbit main revision; enabling the live mapping still requires an independent host administration path.
+
 `run_script` is *not* an arbitrary shell: callers select a preconfigured script name and cannot replace its arguments. The default read-only sample keeps `writes_enabled: false` and does **not** enable `MCP_SHELL_ALLOW_UNSAFE`. For a development workspace, [`examples/security-development.yaml`](examples/security-development.yaml) is the intended opt-in profile: `writes_enabled: true` exposes mcp-shell's typed file/Git write tools inside the dedicated workspace. Their presence is therefore expected and is not by itself a security failure. The security boundary is that arbitrary shell/unsafe execution remains disabled, while command execution stays limited to explicitly allowlisted fixed-argv scripts.
 
 ## Architecture

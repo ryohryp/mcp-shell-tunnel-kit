@@ -1,0 +1,3 @@
+# Example only. Replace mcp-shell with the actual unprivileged Tunnel/MCP service user.
+# Install with visudo validation through an independently authorized administration path.
+mcp-shell ALL=(root) NOPASSWD: /usr/local/sbin/bootstrap-personal-orbit-runtime-artifact ""
